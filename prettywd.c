@@ -19,7 +19,7 @@
 //     ~1;pG;small/prettywd
 //     /6;prettywd
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char *argv[]) {
     const size_t BAD = SIZE_MAX, INF = SIZE_MAX - 1;
     const size_t _NFULL = 1, _NINITIAL = INF;
 
@@ -39,8 +39,8 @@ int main(int argc, const char *argv[]) {
     char *p, *prev = NULL, *start = NULL;
     const char *c;
 
-    for (i = 1; i < argc; ++i)
-        for (c = argv[i]; *c; ++c)
+    if (argc > 1)
+        for (c = argv[1]; *c; ++c)
             if ('0' <= *c && *c <= '9') {
                 if (mul == BAD) mul = 0;
                 mul = mul * 10 + (*c - '0');
@@ -69,7 +69,7 @@ int main(int argc, const char *argv[]) {
 
     home = getenv("HOME");
     if (home) homelen = strlen(home); else root = true;
-    wdlen = strlen(( wd = getcwdx() ));
+    wdlen = strlen(( wd = argc > 2 ? argv[2] : getcwdx() ));
     if (!(wdi = malloc(wdlen + 1))) abort();
     memset(wdi, 0, wdlen + 1);
 
@@ -92,6 +92,7 @@ int main(int argc, const char *argv[]) {
             else start = p;
             prev = p;
         }
+    if (i == -1) abort(); // bad UTF8
 
     if (nparts <= nfull || nparts - nfull <= ninitial) {
         fputc(is_home ? '~' : '/', stdout);
@@ -115,7 +116,7 @@ int main(int argc, const char *argv[]) {
         }
     }
 
-    free(wd);
+    if (argc <= 2) free(wd);
     free(wdi);
     return 0;
 }
